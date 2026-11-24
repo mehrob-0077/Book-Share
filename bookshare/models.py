@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -20,7 +20,7 @@ class Book(models.Model):
     
 
     title = models.CharField(max_length=200)
-    owner = models.ForeignKey(User,on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     desc = models.TextField()
     author = models.CharField(max_length=200)
     status = models.CharField(choices=STATUS,default="NOT_BAD")
@@ -43,11 +43,20 @@ class Trade(models.Model):
         ]
     
     book = models.ForeignKey(Book,on_delete=models.CASCADE)
-    getter = models.ForeignKey(User,on_delete=models.CASCADE)
+    getter = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     trade_at = models.DateTimeField(auto_now=True)
     start_data =models.DateTimeField(auto_now=True)
     finish_data =models.DateTimeField()
     status = models.CharField(choices=STATUS,default="PENDING")
+
+
+class Review(models.Model):
+    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='reviews')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='written_reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True)
+
 
 
 
